@@ -89,10 +89,6 @@ namespace SquatToBegin.GameLogic {
 				return;
 
 			if(!allowPlay) {
-				/*
-				 * Pausing it this way so that the AudioTimeSyncController stays in a playing state, and thus
-				 * this wont count as a pause for the GIGACHAD's who take pride in not pausing 💪
-				 */
 				if(atsc.state == AudioTimeSyncController.State.Playing) {
 					atsc.Pause();
 
