@@ -1,0 +1,17 @@
+﻿<settings-container xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='- https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+	<slider-setting apply-on-change="true" bind-value="true" value="SquatsNeeded" text="Required squats" show-buttons="true"
+					hover-hint="How many squats are required to begin?"
+					min="0" max="100" increment="1" integer-only="true"/>
+	<slider-setting apply-on-change="true" bind-value="true" value="SquatAmount" text="Required Descent"
+					hover-hint="How many meters do you need to go down for a squat to count?"
+					min="0.3" max="0.7" increment="0.05"/>
+	<slider-setting apply-on-change="true" bind-value="true" value="Chance" text="Frequency"
+					hover-hint="How likely should it be that you are required to squat? (1 = 100%)"
+					min="0.2" max="1" increment="0.1"/>
+	<checkbox-setting apply-on-change="true" bind-value="true" value="CountSquatsDoneMidLevel" text="Count Squats done mid-level"
+					hover-hint="When enabled, squats that you do mid-level will also be counted :D"/>
+	<checkbox-setting apply-on-change="true" bind-value="true" value="EnableAfterPause" text="Enable after Pause"/>
+	<checkbox-setting apply-on-change="true" bind-value="true" value="EnableInPractice" text="Enable in Practice"/>
+	<checkbox-setting apply-on-change="true" bind-value="true" value="Ding" text="Play a sound whenever a squat is counted"/>
+	<checkbox-setting apply-on-change="true" bind-value="true" value="Olaf" text="Have Olaf instruct you"/>
+</settings-container>
