@@ -4,12 +4,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using SquatToBegin.AppLogic;
 using TMPro;
 using UnityEngine;
 
 namespace SquatToBegin.GameLogic {
 	class Instructor {
-		static int sessionCounter = 0;
+		readonly StatsTracker statsTracker;
 
 		GameObject cleanInfoText;
 		TextMeshPro cleanLabel;
@@ -17,7 +18,7 @@ namespace SquatToBegin.GameLogic {
 		static AudioSource source = null;
 
 		public void ConfirmSquat() {
-			sessionCounter++;
+			statsTracker.AddSquats();
 
 			if(Config.Instance.Ding && okSound != null)
 				source.PlayOneShot(okSound);
@@ -29,26 +30,36 @@ namespace SquatToBegin.GameLogic {
 		}
 
 		public void SetText(int requiredSquats) {
-			cleanLabel.text = $"<color=#3F3>Squat {requiredSquats}x to {action}</color> <color=#FC5>🏃</color>\n<size=3>{sessionCounter} squat{(sessionCounter != 1 ? "s" : "")} this session";
+			if(cleanLabel == null)
+				return;
+
+			cleanLabel.text = $"<color=#3F3>Squat {requiredSquats}x to {action}</color> <color=#FC5>🏃</color>\n" +
+				$"<size=3>{statsTracker.sessionCounter} squat{(statsTracker.sessionCounter != 1 ? "s" : "")} this session\n" + 
+				$"<size=1.8><color=#BBB>{statsTracker.alltimeCounter} total";
 		}
 
-		public void Show() => cleanInfoText.gameObject.SetActive(true);
-		public void Hide() => cleanInfoText.gameObject.SetActive(false);
+		public void Show() {
+			if(cleanInfoText != null) {
+				cleanInfoText.gameObject.SetActive(true);
+			} else {
+				cleanInfoText = new GameObject($"SquatToBegin", typeof(Canvas), typeof(TextMeshPro));
+
+				cleanLabel = cleanInfoText.GetComponent<TextMeshPro>();
+				cleanLabel.richText = true;
+				cleanLabel.fontSize = 4f;
+				cleanLabel.alignment = TextAlignmentOptions.Center;
+
+				cleanInfoText.transform.position = new Vector3(0, 1.5f, 4f);
+			}
+		}
+
+		public void Hide() => cleanInfoText?.gameObject.SetActive(false);
 
 		static AudioClip[] sounds;
 		static AudioClip okSound;
 
-		public Instructor() {
-			cleanInfoText = new GameObject($"Label", typeof(Canvas), typeof(TextMeshPro));
-
-			cleanLabel = cleanInfoText.GetComponent<TextMeshPro>();
-			cleanLabel.richText = true;
-			cleanLabel.fontSize = 4f;
-			cleanLabel.alignment = TextAlignmentOptions.Center;
-
-			cleanInfoText.transform.position = new Vector3(0, 1.5f, 4f);
-
-			Hide();
+		public Instructor(StatsTracker statsTracker) {
+			this.statsTracker = statsTracker;
 
 			if(sounds == null && (Config.Instance.Olaf || Config.Instance.Ding)) {
 				using(var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("SquatToBegin.iloveolaf")) {

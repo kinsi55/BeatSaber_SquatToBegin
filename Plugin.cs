@@ -4,6 +4,7 @@ using IPA;
 using IPA.Config;
 using IPA.Config.Stores;
 using SiraUtil.Zenject;
+using SquatToBegin.AppLogic;
 using SquatToBegin.GameLogic;
 using System;
 using System.Collections;
@@ -31,10 +32,15 @@ namespace SquatToBegin {
 			Log = logger;
 			Config.Instance = conf.Generated<Config>();
 
+			zenjector.Install(Location.App, container => {
+				container.BindInterfacesAndSelfTo<StatsTracker>().AsSingle();
+			});
+
 			zenjector.Install(Location.StandardPlayer, container => {
 				if(Config.Instance.SquatsNeeded <= 0)
 					return;
 
+				container.BindInterfacesAndSelfTo<Instructor>().AsSingle();
 				container.BindInterfacesAndSelfTo<SquatChecker>().AsSingle().NonLazy();
 
 				if(Config.Instance.EnableAfterPause)

@@ -1,29 +1,30 @@
 ﻿using System;
+using System.Linq;
 using SiraUtil.Tools.FPFC;
 using UnityEngine;
 using Zenject;
 
 namespace SquatToBegin.GameLogic {
-	class SquatChecker : ILateTickable, IDisposable {
+	class SquatChecker : ILateTickable, IDisposable, IInitializable {
 		public static bool enableOnNextSong = false;
 		static int forcedSquatsOnNextStart = 0;
 
 		readonly AudioTimeSyncController atsc;
 		readonly PauseMenuManager pauseMenuManager;
-		readonly Transform headTransform;
 
 		public bool allowPlay { get; private set; } = false;
+		public bool isActive { get; private set; } = false;
 
-		public readonly Instructor instructor;
+		readonly Instructor instructor;
 
-		static readonly IPA.Utilities.FieldAccessor<PlayerTransforms, Transform>.Accessor PlayerTransforms_Transform
-			= IPA.Utilities.FieldAccessor<PlayerTransforms, Transform>.GetAccessor("_headTransform");
+		Camera headCamera;
 
 		public SquatChecker(
 			AudioTimeSyncController atsc,
 			PlayerTransforms playerTransforms,
 			PauseMenuManager pauseMenuManager,
-			IFPFCSettings FPFCSettings
+			IFPFCSettings FPFCSettings,
+			Instructor instructor
 		) {
 #if !DEBUG
 			if(FPFCSettings.Enabled) {
@@ -35,9 +36,7 @@ namespace SquatToBegin.GameLogic {
 			this.pauseMenuManager = pauseMenuManager;
 			this.atsc = atsc;
 
-			headTransform = PlayerTransforms_Transform(ref playerTransforms);
-
-			instructor = new Instructor();
+			this.instructor = instructor;
 
 			pauseMenuManager.didPressRestartButtonEvent += PauseMenuManager_didPressRestartButtonEvent;
 
@@ -55,9 +54,6 @@ namespace SquatToBegin.GameLogic {
 			}
 
 			squatsNeeded = Math.Max(Config.Instance.SquatsNeeded, forcedSquatsOnNextStart);
-
-			instructor?.SetText(squatsNeeded);
-			instructor?.Show();
 
 			allowPlay = false;
 
@@ -85,21 +81,44 @@ namespace SquatToBegin.GameLogic {
 			finishCallback = callback;
 		}
 
+		public void Initialize() => FindTheCamera();
+
+		bool FindTheCamera() {
+			headCamera = UnityEngine.Object.FindObjectsOfType<Camera>().FirstOrDefault(x => x.stereoEnabled && x.isActiveAndEnabled);
+
+			return isActive = headCamera != null;
+		}
+
 		public void LateTick() {
-			if(headTransform == null || atsc == null)
+			if(atsc == null)
 				return;
+
+#if !DEBUG
+			if(headCamera == null) {
+				isActive = false;
+				return;
+			}
+
+			if(!headCamera.stereoEnabled || !headCamera.isActiveAndEnabled) {
+				targetHeight = 0;
+				if(!FindTheCamera())
+					return;
+			}
+#endif
 
 			if(!allowPlay) {
 				if(atsc.state == AudioTimeSyncController.State.Playing) {
 					atsc.Pause();
 
+					instructor.Show();
+					instructor.SetText(squatsNeeded);
 					instructor.PlaySound();
 				}
 			} else if(!Config.Instance.CountSquatsDoneMidLevel) {
 				return;
 			}
 
-			var p = headTransform.localPosition.y;
+			float p;
 
 #if DEBUG
 			if(Input.GetKeyDown(KeyCode.Space)) {
@@ -107,10 +126,12 @@ namespace SquatToBegin.GameLogic {
 			} else {
 				p = 420;
 			}
-#endif
+#else
+			p = headCamera.transform.localPosition.y;
 
 			if(p == 0)
 				return;
+#endif
 
 			if(targetHeight == 0) {
 				standingHeight = p - Math.Max(0.1f, Config.Instance.SquatAmount * .25f);

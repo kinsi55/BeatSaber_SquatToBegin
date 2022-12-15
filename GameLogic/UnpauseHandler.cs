@@ -8,6 +8,7 @@ using Zenject;
 
 namespace SquatToBegin.GameLogic {
 	class UnpauseHandler : IAffinity {
+		[Inject] readonly Instructor instructor = null;
 		[Inject] readonly SquatChecker squatChecker = null;
 
 		[AffinityPatch(typeof(PauseController), nameof(PauseController.HandlePauseMenuManagerDidPressContinueButton))]
@@ -16,7 +17,7 @@ namespace SquatToBegin.GameLogic {
 			if(!squatChecker.allowPlay)
 				return true;
 
-			squatChecker.instructor.SetActionText("continue");
+			instructor.SetActionText("continue");
 			if(squatChecker.ShouldSquat(true)) {
 				____pauseMenuManager.gameObject.SetActive(false);
 
