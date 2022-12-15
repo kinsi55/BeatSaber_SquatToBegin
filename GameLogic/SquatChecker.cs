@@ -69,6 +69,7 @@ namespace SquatToBegin.GameLogic {
 		}
 
 		private void PauseMenuManager_didPressRestartButtonEvent() {
+			enableOnNextSong = true;
 			forcedSquatsOnNextStart = squatsNeeded;
 		}
 
