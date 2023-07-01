@@ -34,7 +34,7 @@ namespace SquatToBegin.GameLogic {
 				return;
 
 			cleanLabel.text = $"<color=#3F3>Squat {requiredSquats}x to {action}</color> <color=#FC5>🏃</color>\n" +
-				$"<size=3>{statsTracker.sessionCounter} squat{(statsTracker.sessionCounter != 1 ? "s" : "")} this session\n" + 
+				$"<size=3>{StatsTracker.sessionCounter} squat{(StatsTracker.sessionCounter != 1 ? "s" : "")} this session\n" + 
 				$"<size=1.8><color=#BBB>{statsTracker.alltimeCounter} total";
 		}
 

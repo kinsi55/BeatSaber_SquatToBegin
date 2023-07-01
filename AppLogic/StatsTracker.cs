@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SquatToBegin.AppLogic {
 	class StatsTracker {
-		public int sessionCounter { get; private set; } = 0;
+		public static int sessionCounter { get; private set; } = 0;
 		public int alltimeCounter { get; private set; } = 0;
 
 		static readonly string statsFilePath = Path.Combine(IPA.Utilities.UnityGame.UserDataPath, "SquatToBeginCounter.txt");
