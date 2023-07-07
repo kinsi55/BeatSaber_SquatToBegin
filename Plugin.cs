@@ -34,6 +34,7 @@ namespace SquatToBegin {
 
 			zenjector.Install(Location.App, container => {
 				container.BindInterfacesAndSelfTo<StatsTracker>().AsSingle();
+				container.BindInterfacesAndSelfTo<UserSoundManager>().AsSingle().NonLazy();
 			});
 
 			zenjector.Install(Location.StandardPlayer, container => {

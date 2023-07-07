@@ -142,8 +142,6 @@ namespace SquatToBegin.GameLogic {
 				isUnsquatted = true;
 
 			if(isUnsquatted && p < targetHeight) {
-				instructor.ConfirmSquat();
-
 				if(squatsNeeded > 0) {
 					if(--squatsNeeded == 0) {
 						finishCallback?.Invoke();
@@ -156,7 +154,9 @@ namespace SquatToBegin.GameLogic {
 						instructor.SetText(squatsNeeded);
 					}
 				}
-				
+
+				instructor.ConfirmSquat();
+
 				isUnsquatted = false;
 			}
 		}

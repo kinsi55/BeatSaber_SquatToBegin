@@ -12,6 +12,7 @@ namespace SquatToBegin {
 		public virtual bool EnableAfterPause { get; set; } = false;
 		public virtual bool Olaf { get; set; } = true;
 		public virtual bool Ding { get; set; } = true;
+		public virtual bool AppendBuiltinSounds { get; set; } = true;
 		public virtual bool CountSquatsDoneMidLevel { get; set; } = false;
 
 		/*/// <summary>

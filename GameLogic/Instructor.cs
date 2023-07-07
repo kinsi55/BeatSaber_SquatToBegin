@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using IPA.Utilities;
 using SquatToBegin.AppLogic;
 using TMPro;
 using UnityEngine;
@@ -11,6 +13,7 @@ using UnityEngine;
 namespace SquatToBegin.GameLogic {
 	class Instructor {
 		readonly StatsTracker statsTracker;
+		readonly UserSoundManager userSoundManager;
 
 		GameObject cleanInfoText;
 		TextMeshPro cleanLabel;
@@ -20,8 +23,8 @@ namespace SquatToBegin.GameLogic {
 		public void ConfirmSquat() {
 			statsTracker.AddSquats();
 
-			if(Config.Instance.Ding && okSound != null)
-				source.PlayOneShot(okSound);
+			if(Config.Instance.Ding && okSounds != null)
+				source.PlayOneShot(okSounds[Plugin.rng.Next(okSounds.Count)]);
 		}
 
 		string action = "begin";
@@ -53,25 +56,44 @@ namespace SquatToBegin.GameLogic {
 			}
 		}
 
-		public void Hide() => cleanInfoText?.gameObject.SetActive(false);
+		public void Hide() {
+			cleanInfoText?.gameObject.SetActive(false);
+			source?.Stop();
+		}
 
-		static AudioClip[] sounds;
-		static AudioClip okSound;
+		static List<AudioClip> sounds;
+		static List<AudioClip> okSounds;
 
 		public Instructor(StatsTracker statsTracker) {
 			this.statsTracker = statsTracker;
 
-			if(sounds == null && (Config.Instance.Olaf || Config.Instance.Ding)) {
+			sounds = UserSoundManager.sounds;
+			okSounds = UserSoundManager.okSounds;
+
+			if((sounds == null || okSounds == null || Config.Instance.AppendBuiltinSounds) && (Config.Instance.Olaf || Config.Instance.Ding)) {
 				using(var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("SquatToBegin.iloveolaf")) {
 					var bundle = AssetBundle.LoadFromStream(stream);
 
-					okSound = bundle.LoadAsset<AudioClip>("ok");
-					sounds = new[] {
+					if(okSounds != null) {
+						if(Config.Instance.AppendBuiltinSounds)
+							okSounds.Add(bundle.LoadAsset<AudioClip>("ok"));
+					} else {
+						okSounds ??= new List<AudioClip> { bundle.LoadAsset<AudioClip>("ok") };
+					}
+
+					var x = new List<AudioClip> {
 						bundle.LoadAsset<AudioClip>("1"),
 						bundle.LoadAsset<AudioClip>("2"),
 						bundle.LoadAsset<AudioClip>("3"),
 						bundle.LoadAsset<AudioClip>("4")
 					};
+
+					if(sounds != null) {
+						if(Config.Instance.AppendBuiltinSounds)
+							sounds.AddRange(x);
+					} else {
+						sounds = x;
+					}
 
 					bundle.Unload(false);
 				}
@@ -93,7 +115,7 @@ namespace SquatToBegin.GameLogic {
 
 			if(Config.Instance.Olaf) {
 				source.Stop();
-				source.PlayOneShot(sounds[Plugin.rng.Next(sounds.Length)]);
+				source.PlayOneShot(sounds[Plugin.rng.Next(sounds.Count)]);
 			}
 		}
 	}
