@@ -14,10 +14,14 @@ namespace SquatToBegin.AppLogic {
 
 		public StatsTracker() {
 			if(File.Exists(statsFilePath)) {
-				using(var f = File.OpenRead(statsFilePath)) {
-					using(var r = new StreamReader(f)) {
-						if(!r.EndOfStream && int.TryParse(r.ReadLine(), out var alltimeCounter))
-							this.alltimeCounter = alltimeCounter;
+				var content = File.ReadAllText(statsFilePath);
+				var lines = content.Split('\n');
+				if(int.TryParse(lines[0], out int alltime)) alltimeCounter = alltime;
+				if(Config.Instance.wtf && int.TryParse(lines[1], out var session) && DateTime.TryParse(lines[3], out var lastWrite)) {
+					var now = DateTime.Now;
+					if(now - lastWrite < TimeSpan.FromMinutes(10)) {
+						Plugin.Log.Info("Restoring last session counter");
+						sessionCounter = session;
 					}
 				}
 
@@ -35,7 +39,8 @@ namespace SquatToBegin.AppLogic {
 		void WriteSquats() {
 			Task.Run(() => {
 				try {
-					File.WriteAllText(statsFilePath, $"{alltimeCounter}\n{sessionCounter}");
+					var lastWrite = DateTime.Now;
+					File.WriteAllText(statsFilePath, $"{alltimeCounter}\n{sessionCounter}\n{lastWrite}");
 				} catch { }
 			});
 		}

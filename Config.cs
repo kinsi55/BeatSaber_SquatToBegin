@@ -14,6 +14,7 @@ namespace SquatToBegin {
 		public virtual bool Ding { get; set; } = true;
 		public virtual bool AppendBuiltinSounds { get; set; } = true;
 		public virtual bool CountSquatsDoneMidLevel { get; set; } = false;
+		public virtual bool wtf { get; set; } = true;
 
 		/*/// <summary>
 		/// This is called whenever BSIPA reads the config from disk (including when file changes are detected).
