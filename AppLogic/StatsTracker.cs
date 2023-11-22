@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SquatToBegin.AppLogic {
@@ -16,8 +13,8 @@ namespace SquatToBegin.AppLogic {
 			if(File.Exists(statsFilePath)) {
 				var content = File.ReadAllText(statsFilePath);
 				var lines = content.Split('\n');
-				if(int.TryParse(lines[0], out int alltime)) alltimeCounter = alltime;
-				if(Config.Instance.wtf && int.TryParse(lines[1], out var session) && DateTime.TryParse(lines[3], out var lastWrite)) {
+				if(int.TryParse(lines[0], out var alltime)) alltimeCounter = alltime;
+				if(Config.Instance.TryPreserveSession && int.TryParse(lines[1], out var session) && DateTime.TryParse(lines[2], out var lastWrite)) {
 					var now = DateTime.Now;
 					if(now - lastWrite < TimeSpan.FromMinutes(10)) {
 						Plugin.Log.Info("Restoring last session counter");
