@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using SiraUtil.Tools.FPFC;
 using UnityEngine;
 using Zenject;
@@ -142,20 +144,30 @@ namespace SquatToBegin.GameLogic {
 				isUnsquatted = true;
 
 			if(isUnsquatted && p < targetHeight) {
+				instructor.ConfirmSquat();
+
 				if(squatsNeeded > 0) {
 					if(--squatsNeeded == 0) {
-						finishCallback?.Invoke();
-						finishCallback = null;
-
-						allowPlay = true;
-						atsc.Resume();
 						instructor.Hide();
+
+						void exit() {
+							finishCallback?.Invoke();
+							finishCallback = null;
+
+							allowPlay = true;
+							atsc.Resume();
+						}
+						if(Config.Instance.UnpauseDelay > 0) {
+							Task.Delay((int)(Config.Instance.UnpauseDelay * 100)).ContinueWith(x => {
+								exit();
+							}, TaskScheduler.FromCurrentSynchronizationContext());
+						} else {
+							exit();
+						}
 					} else {
 						instructor.SetText(squatsNeeded);
 					}
 				}
-
-				instructor.ConfirmSquat();
 
 				isUnsquatted = false;
 			}

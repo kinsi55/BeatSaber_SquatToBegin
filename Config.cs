@@ -6,6 +6,7 @@ namespace SquatToBegin {
 	internal class Config {
 		public static Config Instance;
 		public virtual float SquatAmount { get; set; } = 0.4f;
+		public virtual float UnpauseDelay { get; set; } = 0.2f;
 		public virtual float Chance { get; set; } = 1f;
 		public virtual int SquatsNeeded { get; set; } = 1;
 		public virtual bool EnableInPractice { get; set; } = false;

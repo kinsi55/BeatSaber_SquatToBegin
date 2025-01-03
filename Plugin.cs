@@ -48,7 +48,9 @@ namespace SquatToBegin {
 					container.BindInterfacesTo<UnpauseHandler>().AsSingle();
 			});
 
-			BSMLSettings.instance.AddSettingsMenu("SquatToBegin", "SquatToBegin.UI.settings.bsml", Config.Instance);
+			BeatSaberMarkupLanguage.Util.MainMenuAwaiter.MainMenuInitializing += delegate {
+				BSMLSettings.Instance.AddSettingsMenu("SquatToBegin", "SquatToBegin.UI.settings.bsml", Config.Instance);
+			};
 
 			harmony = new Harmony("Kinsi55.BeatSaber.SquatToBegin");
 
