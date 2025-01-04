@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SquatToBegin.AppLogic {
@@ -14,10 +11,14 @@ namespace SquatToBegin.AppLogic {
 
 		public StatsTracker() {
 			if(File.Exists(statsFilePath)) {
-				using(var f = File.OpenRead(statsFilePath)) {
-					using(var r = new StreamReader(f)) {
-						if(!r.EndOfStream && int.TryParse(r.ReadLine(), out var alltimeCounter))
-							this.alltimeCounter = alltimeCounter;
+				var content = File.ReadAllText(statsFilePath);
+				var lines = content.Split('\n');
+				if(int.TryParse(lines[0], out var alltime)) alltimeCounter = alltime;
+				if(Config.Instance.TryPreserveSession && int.TryParse(lines[1], out var session) && DateTime.TryParse(lines[2], out var lastWrite)) {
+					var now = DateTime.Now;
+					if(now - lastWrite < TimeSpan.FromMinutes(10)) {
+						Plugin.Log.Info("Restoring last session counter");
+						sessionCounter = session;
 					}
 				}
 
@@ -35,7 +36,8 @@ namespace SquatToBegin.AppLogic {
 		void WriteSquats() {
 			Task.Run(() => {
 				try {
-					File.WriteAllText(statsFilePath, $"{alltimeCounter}\n{sessionCounter}");
+					var lastWrite = DateTime.Now;
+					File.WriteAllText(statsFilePath, $"{alltimeCounter}\n{sessionCounter}\n{lastWrite}");
 				} catch { }
 			});
 		}
