@@ -1,4 +1,4 @@
-# BeatSaber_Tweaks55
+# BeatSaber_SquatToBegin
 
 Is shitmissing not frustrating enough for you, or do you simply need to improve your physique? Then Squat To Begin is just the right plugin for you!
 
