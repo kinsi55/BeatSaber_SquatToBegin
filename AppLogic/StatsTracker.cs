@@ -18,6 +18,9 @@ namespace SquatToBegin.AppLogic {
 					using(var r = new StreamReader(f)) {
 						if(!r.EndOfStream && int.TryParse(r.ReadLine(), out var alltimeCounter))
 							this.alltimeCounter = alltimeCounter;
+
+						if(!r.EndOfStream && File.GetLastWriteTime(statsFilePath).AddHours(0.5) > DateTime.Now && int.TryParse(r.ReadLine(), out var sessionCounter))
+							StatsTracker.sessionCounter = sessionCounter;
 					}
 				}
 
