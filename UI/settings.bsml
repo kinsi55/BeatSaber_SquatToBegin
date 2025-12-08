@@ -14,6 +14,7 @@
 	<checkbox-setting apply-on-change="true" bind-value="true" value="CountSquatsDoneMidLevel" text="Count Squats done mid-level"
 					hover-hint="When enabled, squats that you do mid-level will also be counted :D"/>
 	<checkbox-setting apply-on-change="true" bind-value="true" value="EnableAfterPause" text="Enable after Pause"/>
+	<checkbox-setting apply-on-change="true" bind-value="true" value="EnableAfterRestart" text="Enable after Restart"/>
 	<checkbox-setting apply-on-change="true" bind-value="true" value="EnableInPractice" text="Enable in Practice"/>
 	<checkbox-setting apply-on-change="true" bind-value="true" value="Ding" text="Play a sound whenever a squat is counted"/>
 	<checkbox-setting apply-on-change="true" bind-value="true" value="Olaf" text="Have Olaf instruct you"/>

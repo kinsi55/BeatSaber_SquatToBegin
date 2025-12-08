@@ -55,7 +55,8 @@ namespace SquatToBegin.GameLogic {
 				return false;
 			}
 
-			squatsNeeded = Math.Max(Config.Instance.SquatsNeeded, forcedSquatsOnNextStart);
+			squatsNeeded = forcedSquatsOnNextStart != 0 ?
+				forcedSquatsOnNextStart : Math.Max(Config.Instance.SquatsNeeded, forcedSquatsOnNextStart);
 
 			allowPlay = false;
 
@@ -67,6 +68,9 @@ namespace SquatToBegin.GameLogic {
 		}
 
 		private void PauseMenuManager_didPressRestartButtonEvent() {
+			if(!Config.Instance.EnableAfterRestart && squatsNeeded <= 0)
+				return;
+
 			enableOnNextSong = true;
 			forcedSquatsOnNextStart = squatsNeeded;
 		}
