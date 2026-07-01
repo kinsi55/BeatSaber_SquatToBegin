@@ -113,7 +113,7 @@ namespace SquatToBegin.GameLogic {
 #endif
 
 			if(!allowPlay) {
-				if(atsc.state == AudioTimeSyncController.State.Playing) {
+				if(atsc.state == IAudioTimeSource.State.Playing) {
 					atsc.Pause();
 
 					instructor.Show();
