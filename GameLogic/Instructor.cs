@@ -71,7 +71,7 @@ namespace SquatToBegin.GameLogic {
 			var item = Plugin.rng.Next(max);
 			var tList = builtin;
 
-			if(item > builtinCount || builtin == null) {
+			if(item >= builtinCount || builtin == null) {
 				tList = user;
 				item -= builtinCount;
 			}
