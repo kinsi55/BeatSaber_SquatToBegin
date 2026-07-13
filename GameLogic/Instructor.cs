@@ -23,8 +23,8 @@ namespace SquatToBegin.GameLogic {
 		public void ConfirmSquat() {
 			statsTracker.AddSquats();
 
-			if(Config.Instance.Ding && okSounds != null)
-				source.PlayOneShot(okSounds[Plugin.rng.Next(okSounds.Count)]);
+			if(Config.Instance.Ding)
+				PlayRandomSound(okSounds, UserSoundManager.okSounds);
 		}
 
 		string action = "begin";
@@ -64,43 +64,52 @@ namespace SquatToBegin.GameLogic {
 		static List<AudioClip> sounds;
 		static List<AudioClip> okSounds;
 
+		void PlayRandomSound(List<AudioClip> builtin, List<AudioClip> user) {
+			var builtinCount = Config.Instance.AppendBuiltinSounds ? (builtin?.Count ?? 0) : 0;
+			var max = builtinCount + user?.Count ?? 0;
+
+			var item = Plugin.rng.Next(max);
+			var tList = builtin;
+
+			if(item > builtinCount || builtin == null) {
+				tList = user;
+				item -= builtinCount;
+			}
+
+			if((tList?.Count ?? 0) == 0)
+				return;
+
+			source.PlayOneShot(tList[item]);
+		}
+
 		public Instructor(StatsTracker statsTracker) {
 			this.statsTracker = statsTracker;
 
-			sounds = UserSoundManager.sounds;
-			okSounds = UserSoundManager.okSounds;
-
-			if((sounds == null || okSounds == null || Config.Instance.AppendBuiltinSounds) && (Config.Instance.Olaf || Config.Instance.Ding)) {
+			if((sounds == null || okSounds == null) && (Config.Instance.Olaf || Config.Instance.Ding)) {
 				using(var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("SquatToBegin.iloveolaf")) {
 					var bundle = AssetBundle.LoadFromStream(stream);
 
-					if(okSounds != null) {
-						if(Config.Instance.AppendBuiltinSounds)
-							okSounds.Add(bundle.LoadAsset<AudioClip>("ok"));
-					} else {
+					if(Config.Instance.Ding)
 						okSounds ??= new List<AudioClip> { bundle.LoadAsset<AudioClip>("ok") };
-					}
 
-					var x = new List<AudioClip> {
-						bundle.LoadAsset<AudioClip>("1"),
-						bundle.LoadAsset<AudioClip>("2"),
-						bundle.LoadAsset<AudioClip>("3"),
-						bundle.LoadAsset<AudioClip>("4")
-					};
-
-					if(sounds != null) {
-						if(Config.Instance.AppendBuiltinSounds)
-							sounds.AddRange(x);
-					} else {
-						sounds = x;
+					if(sounds == null && Config.Instance.Olaf) {
+						sounds = new List<AudioClip> {
+							bundle.LoadAsset<AudioClip>("1"),
+							bundle.LoadAsset<AudioClip>("2"),
+							bundle.LoadAsset<AudioClip>("3"),
+							bundle.LoadAsset<AudioClip>("4")
+						};
 					}
 
 					bundle.Unload(false);
 				}
 			}
+
+			Plugin.Log.Info(string.Format("Instructor initialized with {0} begin sounds", sounds.Count));
 		}
 
 		public void PlaySound() {
+			Plugin.Log.Info("PlaySound()");
 			if(sounds == null)
 				return;
 
@@ -113,9 +122,12 @@ namespace SquatToBegin.GameLogic {
 				GameObject.DontDestroyOnLoad(source);
 			}
 
+			Plugin.Log.Info("Grabbed source");
+
 			if(Config.Instance.Olaf) {
 				source.Stop();
-				source.PlayOneShot(sounds[Plugin.rng.Next(sounds.Count)]);
+
+				PlayRandomSound(sounds, UserSoundManager.sounds);
 			}
 		}
 	}
