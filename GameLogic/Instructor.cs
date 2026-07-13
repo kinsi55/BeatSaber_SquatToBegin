@@ -66,7 +66,7 @@ namespace SquatToBegin.GameLogic {
 
 		void PlayRandomSound(List<AudioClip> builtin, List<AudioClip> user) {
 			var builtinCount = Config.Instance.AppendBuiltinSounds ? (builtin?.Count ?? 0) : 0;
-			var max = builtinCount + user?.Count ?? 0;
+			var max = builtinCount + (user?.Count ?? 0);
 
 			var item = Plugin.rng.Next(max);
 			var tList = builtin;
@@ -85,7 +85,7 @@ namespace SquatToBegin.GameLogic {
 		public Instructor(StatsTracker statsTracker) {
 			this.statsTracker = statsTracker;
 
-			if((sounds == null || okSounds == null) && (Config.Instance.Olaf || Config.Instance.Ding)) {
+			if((sounds == null && Config.Instance.Olaf) || (okSounds == null && Config.Instance.Ding)) {
 				using(var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("SquatToBegin.iloveolaf")) {
 					var bundle = AssetBundle.LoadFromStream(stream);
 
@@ -103,9 +103,9 @@ namespace SquatToBegin.GameLogic {
 
 					bundle.Unload(false);
 				}
-			}
 
-			Plugin.Log.Info(string.Format("Instructor initialized with {0} begin sounds", sounds.Count));
+				Plugin.Log.Info(string.Format("Instructor sounds initialized", sounds.Count));
+			}
 		}
 
 		public void PlaySound() {
